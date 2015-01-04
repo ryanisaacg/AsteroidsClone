@@ -4,10 +4,10 @@ LEFT_BORDER = 480
 TOP_BORDER = 360
 //Load and initialize content
 var shipTex = new Image(), back = new Image()
-shipTex.src = "ship.png"
+shipTex.src = "imges/ship.png"
 var ship = Object.create(Entity)
 ship.setTex(shipTex)
-back.src = "background.png"
+back.src = "images/background.png"
 //Set up game logic
 function start(){
 	ship.position.x = 120
