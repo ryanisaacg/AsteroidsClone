@@ -1,0 +1,47 @@
+#Initialize constants and structs
+var WIDTH = 960, HEIGHT = 540
+struct Ship = (rect, vector, rotation)
+g = getGraphics("canvas")
+
+#Create game objects
+player = new Ship(new Rectangle(WIDTH / 2, 0, 32, 32), new Vector(0, 0), 0)
+
+$ Draws a ship object
+graphics- the html5 canvas to draw to
+ship- a Ship object to draw
+global- pure
+graphics is mutated $
+function drawShip(graphics, ship) {
+	graphics.translate(ship.rect.x, ship.rect.y)
+	graphics.rotate(ship.rotation * Math.PI / 180)
+	var width, height;
+	width = ship.rect.width
+	height = ship.rect.height
+	graphics.fillRect(-width / 2, -height / 2, width, height)
+	graphics.rotate(-ship.rotation * Math.PI / 180)
+	graphics.translate(-ship.rect.x, -ship.rect.y)
+}
+
+$ Step function
+global- impure (g, player, etc. $
+function step() {
+	if(Keyboard["37"])
+		player.rotation -= 4
+	if(Keyboard["39"])
+		player.rotation += 4
+	if(Keyboard["38"]) {
+		player.vector = addVector(player.vector, angleToVector(player.rotation, 0.1))
+		console.log(player)
+	}
+	v = addVector(player.rect, player.vector)
+	player.rect.x = v.x
+	player.rect.y = v.y
+	
+	g.clearRect(0, 0, 960, 540)
+	g.fillStyle = "#FFFFFF"
+	drawShip(g, player)
+}
+function main() {
+	setInterval(step, 1000 / 60)
+}
+main()
