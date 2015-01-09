@@ -6,7 +6,9 @@ g = getGraphics("canvas")
 #Create game objects
 player = new Ship(new Rectangle(WIDTH / 2, 0, 32, 32), new Vector(0, 0), 0)
 
-$ Draws a ship object
+$
+drawShip(graphics, ship) 
+Draws a ship object
 graphics- the html5 canvas to draw to
 ship- a Ship object to draw
 global- pure
@@ -22,8 +24,10 @@ function drawShip(graphics, ship) {
 	graphics.translate(-ship.rect.x, -ship.rect.y)
 }
 
-$ Step function
-global- impure (g, player, etc. $
+$
+step()
+advances the game state by one frame
+global- impure (g, player, etc.) $
 function step() {
 	if(Keyboard["37"])
 		player.rotation -= 4
