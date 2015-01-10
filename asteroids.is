@@ -1,3 +1,5 @@
+using geom
+
 #Initialize constants and structs
 struct Entity = (pos, vector, rotation, img)
 g = getGraphics("canvas")

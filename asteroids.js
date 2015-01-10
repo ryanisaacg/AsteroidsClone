@@ -1,4 +1,58 @@
 
+
+
+function getSign(number) {
+
+	return Math.abs((number) / number)
+
+}
+
+
+
+function limit(number, absLimit) {
+
+	if(Math.abs(number) > absLimit)
+
+		number = getSign(number) * absLimit
+
+	return number
+
+}
+
+
+
+function print(obj) {
+
+	console.log(obj)
+
+}
+function getGraphics(canvasName) {
+	c = document.getElementById(canvasName)
+	graphics = c.getContext("2d")
+	return graphics;
+}
+function getImage(path) {
+	var img = new Image()
+	img.src = path
+	return img
+}
+var Keyboard = {
+	left : false,
+	right : false,
+	up : false, 
+	set : function(keyCode, value) {
+		this[keyCode.toString()] = value
+	}
+}
+document.addEventListener('keydown', function(event) { Keyboard.set(event.keyCode, true) })
+document.addEventListener('keyup', function(event) { Keyboard.set(event.keyCode, false) })
+Math.toRadians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+Math.toDegrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
+
 var Vector = function(x,  y){this.x=x
 this. y= y
 }
@@ -68,60 +122,6 @@ function translateRect(rect, vector) {
 }
 
 
-
-
-
-function getSign(number) {
-
-	return Math.abs((number) / number)
-
-}
-
-
-
-function limit(number, absLimit) {
-
-	if(Math.abs(number) > absLimit)
-
-		number = getSign(number) * absLimit
-
-	return number
-
-}
-
-
-
-function print(obj) {
-
-	console.log(obj)
-
-}
-function getGraphics(canvasName) {
-	c = document.getElementById(canvasName)
-	graphics = c.getContext("2d")
-	return graphics;
-}
-function getImage(path) {
-	var img = new Image()
-	img.src = path
-	return img
-}
-var Keyboard = {
-	left : false,
-	right : false,
-	up : false, 
-	set : function(keyCode, value) {
-		this[keyCode.toString()] = value
-	}
-}
-document.addEventListener('keydown', function(event) { Keyboard.set(event.keyCode, true) })
-document.addEventListener('keyup', function(event) { Keyboard.set(event.keyCode, false) })
-Math.toRadians = function(degrees) {
-  return degrees * Math.PI / 180;
-};
-Math.toDegrees = function(radians) {
-  return radians * 180 / Math.PI;
-};
 
 var Entity = function(pos,  vector,  rotation,  img){this.pos=pos
 this. vector= vector
