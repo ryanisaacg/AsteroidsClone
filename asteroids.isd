@@ -1,10 +1,12 @@
+
 drawShip(graphics, ship) 
 Draws a ship object
 graphics- the html5 canvas to draw to
 ship- a Ship object to draw
 global- pure
 graphics is mutated 
- step()
+
+step()
 advances the game state by one frame
 global- impure (g, player, etc.) 
 

@@ -3,6 +3,8 @@ var Vector = function(x,  y){this.x=x
 this. y= y
 }
 
+
+
 function angleToVector(direction, magnitude) {
 
 	var v = new Vector(0, 0)
@@ -15,11 +17,40 @@ function angleToVector(direction, magnitude) {
 
 }
 
+
+
 function addVector(v1, v2) {
 
 	return new Vector(v1.x + v2.x, v1.y + v2.y)
 
 }
+
+
+
+function wrap(vector, width, height) {
+
+	var v = new Vector(vector.x, vector.y)
+
+	if(v.x > width)
+
+		v.x = v.x - width
+
+	if(v.x < 0)
+
+		v.x = width + v.x
+
+	if(v.y > height)
+
+		v.y = v.y - height
+
+	if(v.y < 0)
+
+		v.y = height + v.y
+
+	return v
+
+}
+
 
 
 var Rectangle = function(x,  y,  width,  height){this.x=x
@@ -28,26 +59,42 @@ this. width= width
 this. height= height
 }
 
+
+
 function translateRect(rect, vector) {
 
 	return new Rectangle(rect.x + vector.x, rect.y + vector.y, rect.width, rect.height)
 
 }
-function getType(x) {
-	if(typeof x == 'number') {
-		if(x % 1 == 0) {
-			return 'int'
-		}
-		else {
-			return 'float'
-		}
-	}
-	if(typeof x == 'string') {
-		return 'string'
-	}
-	if(typeof x == 'object') {
-		return 'object'
-	}
+
+
+
+
+
+function getSign(number) {
+
+	return Math.abs((number) / number)
+
+}
+
+
+
+function limit(number, absLimit) {
+
+	if(Math.abs(number) > absLimit)
+
+		number = getSign(number) * absLimit
+
+	return number
+
+}
+
+
+
+function print(obj) {
+
+	console.log(obj)
+
 }
 function getGraphics(canvasName) {
 	c = document.getElementById(canvasName)
@@ -76,46 +123,65 @@ Math.toDegrees = function(radians) {
   return radians * 180 / Math.PI;
 };
 
-var WIDTH = 960, HEIGHT = 540
-
-var Ship = function(rect,  vector,  rotation){this.rect=rect
+var Entity = function(pos,  vector,  rotation,  img){this.pos=pos
 this. vector= vector
 this. rotation= rotation
+this. img= img
 }
 
 g = getGraphics("canvas")
 
 
 
-player = new Ship(new Rectangle(WIDTH / 2, 0, 32, 32), new Vector(0, 0), 0)
+player = new Entity(new Vector(0, 0), new Vector(0, 0), 0, getImage("images\\ship.png"))
 
 
 
 
-function drawShip(graphics, ship) {
+function drawEntity(graphics, entity) {
 
-	graphics.translate(ship.rect.x, ship.rect.y)
+	graphics.translate(entity.pos.x, entity.pos.y)
 
-	graphics.rotate(ship.rotation * Math.PI / 180)
+	graphics.rotate(entity.rotation * Math.PI / 180)
 
-	var width, height;
+	graphics.drawImage(entity.img, -entity.img.width / 2, -entity.img.height / 2)
 
-	width = ship.rect.width
+	graphics.rotate(-entity.rotation * Math.PI / 180)
 
-	height = ship.rect.height
+	graphics.translate(-entity.pos.x, -entity.pos.y)
 
-	graphics.fillRect(-width / 2, -height / 2, width, height)
+}
 
-	graphics.rotate(-ship.rotation * Math.PI / 180)
 
-	graphics.translate(-ship.rect.x, -ship.rect.y)
+function limit(vector, amt) {
+
+	v = new Vector(vector.x, vector.y)
+
+	if(v.x > amt)
+
+		v.x = amt
+
+	if(v.x < -amt)
+
+		v.x = -amt
+
+	if(v.y > amt)
+
+		v.y = amt
+
+	if(v.y < -amt)
+
+		v.y = -amt
+
+	return v
 
 }
 
 
 
-
 function step() {
+
+	var WIDTH = 960, HEIGHT = 540
 
 	if(Keyboard["37"])
 
@@ -125,19 +191,13 @@ function step() {
 
 		player.rotation += 4
 
-	if(Keyboard["38"]) {
+	if(Keyboard["38"]) 
 
 		player.vector = addVector(player.vector, angleToVector(player.rotation, 0.1))
 
-		console.log(player)
+	player.pos = wrap(addVector(player.pos, player.vector), WIDTH, HEIGHT)
 
-	}
-
-	v = addVector(player.rect, player.vector)
-
-	player.rect.x = v.x
-
-	player.rect.y = v.y
+	player.vector = limit(player.vector, 5)
 
 	
 
@@ -145,7 +205,7 @@ function step() {
 
 	g.fillStyle = "#FFFFFF"
 
-	drawShip(g, player)
+	drawEntity(g, player)
 
 }
 

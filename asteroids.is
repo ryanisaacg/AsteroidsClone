@@ -1,49 +1,56 @@
 #Initialize constants and structs
-var WIDTH = 960, HEIGHT = 540
-struct Ship = (rect, vector, rotation)
+struct Entity = (pos, vector, rotation, img)
 g = getGraphics("canvas")
 
 #Create game objects
-player = new Ship(new Rectangle(WIDTH / 2, 0, 32, 32), new Vector(0, 0), 0)
+player = new Entity(new Vector(0, 0), new Vector(0, 0), 0, getImage("images\\ship.png"))
 
 $
-drawShip(graphics, ship) 
-Draws a ship object
+drawEntity(graphics, Entity) 
+Draws a Entity object
 graphics- the html5 canvas to draw to
-ship- a Ship object to draw
+Entity- a Entity object to draw
 global- pure
 graphics is mutated $
-function drawShip(graphics, ship) {
-	graphics.translate(ship.rect.x, ship.rect.y)
-	graphics.rotate(ship.rotation * Math.PI / 180)
-	var width, height;
-	width = ship.rect.width
-	height = ship.rect.height
-	graphics.fillRect(-width / 2, -height / 2, width, height)
-	graphics.rotate(-ship.rotation * Math.PI / 180)
-	graphics.translate(-ship.rect.x, -ship.rect.y)
+function drawEntity(graphics, entity) {
+	graphics.translate(entity.pos.x, entity.pos.y)
+	graphics.rotate(entity.rotation * Math.PI / 180)
+	graphics.drawImage(entity.img, -entity.img.width / 2, -entity.img.height / 2)
+	graphics.rotate(-entity.rotation * Math.PI / 180)
+	graphics.translate(-entity.pos.x, -entity.pos.y)
 }
 
+function limit(vector, amt) {
+	v = new Vector(vector.x, vector.y)
+	if(v.x > amt)
+		v.x = amt
+	if(v.x < -amt)
+		v.x = -amt
+	if(v.y > amt)
+		v.y = amt
+	if(v.y < -amt)
+		v.y = -amt
+	return v
+}
 $
 step()
 advances the game state by one frame
-global- impure (g, player, etc.) $
+impure
+$
 function step() {
+	var WIDTH = 960, HEIGHT = 540
 	if(Keyboard["37"])
 		player.rotation -= 4
 	if(Keyboard["39"])
 		player.rotation += 4
-	if(Keyboard["38"]) {
+	if(Keyboard["38"]) 
 		player.vector = addVector(player.vector, angleToVector(player.rotation, 0.1))
-		console.log(player)
-	}
-	v = addVector(player.rect, player.vector)
-	player.rect.x = v.x
-	player.rect.y = v.y
+	player.pos = wrap(addVector(player.pos, player.vector), WIDTH, HEIGHT)
+	player.vector = limit(player.vector, 5)
 	
 	g.clearRect(0, 0, 960, 540)
 	g.fillStyle = "#FFFFFF"
-	drawShip(g, player)
+	drawEntity(g, player)
 }
 function main() {
 	setInterval(step, 1000 / 60)
