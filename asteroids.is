@@ -1,12 +1,20 @@
 using geom
-
 #Initialize constants and structs
 struct Entity = (pos, vector, rotation, img)
 g = getGraphics("canvas")
-
+#Load game content
+var shipTex, flareTex;
+shipTex = getImage("images\\ship.png")
+flareTex = getImage("images\\flare.png")
+asteroidTex = getImage("images\\asteroids.png")
 #Create game objects
-player = new Entity(new Vector(0, 0), new Vector(0, 0), 0, getImage("images\\ship.png"))
-
+player = new Entity(new Vector(0, 0), new Vector(0, 0), 0, shipTex)
+player.delay = 0
+asteroids = []
+for(var i = 0; i < 3; i++) {
+	asteroids.push(new Entity(new Vector(random(960), random(540)), new Vector(random(2) - 1, random(2) - 1),0,asteroidTex))
+}
+bullets = []
 $
 drawEntity(graphics, Entity) 
 Draws a Entity object
@@ -21,40 +29,56 @@ function drawEntity(graphics, entity) {
 	graphics.rotate(-entity.rotation * Math.PI / 180)
 	graphics.translate(-entity.pos.x, -entity.pos.y)
 }
-
-function limit(vector, amt) {
-	v = new Vector(vector.x, vector.y)
-	if(v.x > amt)
-		v.x = amt
-	if(v.x < -amt)
-		v.x = -amt
-	if(v.y > amt)
-		v.y = amt
-	if(v.y < -amt)
-		v.y = -amt
-	return v
-}
 $
 step()
 advances the game state by one frame
-impure
-$
+impure$
 function step() {
+	#Update
 	var WIDTH = 960, HEIGHT = 540
+	var accel = false
+	if(player.delay > 0)
+		player.delay -= 1
 	if(Keyboard["37"])
 		player.rotation -= 4
 	if(Keyboard["39"])
 		player.rotation += 4
-	if(Keyboard["38"]) 
+	if(accel = Keyboard["38"]) 
 		player.vector = addVector(player.vector, angleToVector(player.rotation, 0.1))
+	if(Keyboard["32"] && player.delay <= 0) {
+		bullets.push(new Entity(player.pos, angleToVector(player.rotation, 5), 0, null))
+		player.delay = 20
+	}
 	player.pos = wrap(addVector(player.pos, player.vector), WIDTH, HEIGHT)
 	player.vector = limit(player.vector, 5)
+	for(var i = 0; i < bullets.length; i++) {
+		bullets[i].pos = wrap(addVector(bullets[i].pos, bullets[i].vector, WIDTH, HEIGHT))
+		if(bullets[i].pos.x < 0 || bullets[i].pos.x > WIDTH || bullets[i].pos.y < 0 || bullets[i].pos.y > HEIGHT)
+			bullets.splice(i, 1)
+	}
+	for(var j = 0; j < asteroids.length; j++) {
+		asteroids[j].pos = wrap(addVector(asteroids[j].pos, asteroids[j].vector), WIDTH, HEIGHT)
+		for(var i = 0; i < bullets.length; i++) {
+			if(inArea(bullets[i].pos, asteroids[j].pos, asteroids[j].img.width, asteroids[j].img.height)) {
+				asteroids.splice(j, 1)
+				bullets.splice(i, 1)
+				
+			}
+		}
+	}
 	
-	g.clearRect(0, 0, 960, 540)
-	g.fillStyle = "#FFFFFF"
+	#Draw
+	g.clearRect(0, 0, 970, 560)
+	player.img = shipTex
 	drawEntity(g, player)
+	if(accel){
+		player.img = flareTex
+		drawEntity(g, player)
+	}
+	for(var i = 0; i < asteroids.length; i++)
+		drawEntity(g, asteroids[i])
+	g.fillStyle = "#FFFFFF"
+	for(var i = 0; i < bullets.length; i++) 
+		g.fillRect(bullets[i].pos.x - 1, bullets[i].pos.y - 1, 2, 2)
 }
-function main() {
-	setInterval(step, 1000 / 60)
-}
-main()
+setInterval(step, 1000 / 60)
