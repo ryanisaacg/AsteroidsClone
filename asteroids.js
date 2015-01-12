@@ -239,9 +239,13 @@ function step() {
 
 		bullets[i].pos = wrap(addVector(bullets[i].pos, bullets[i].vector, WIDTH, HEIGHT))
 
-		if(bullets[i].pos.x < 0 || bullets[i].pos.x > WIDTH || bullets[i].pos.y < 0 || bullets[i].pos.y > HEIGHT)
+		if(bullets[i].pos.x < 0 || bullets[i].pos.x > WIDTH || bullets[i].pos.y < 0 || bullets[i].pos.y > HEIGHT) {
+
+			delete bullets[i]
 
 			bullets.splice(i, 1)
+
+		}
 
 	}
 
@@ -251,15 +255,27 @@ function step() {
 
 		for(var i = 0; i < bullets.length; i++) {
 
-			if(inArea(bullets[i].pos, asteroids[j].pos, asteroids[j].img.width, asteroids[j].img.height)) {
+			var aWidth = asteroids[j].img.width, aHeight = asteroids[j].img.height;
+
+			var aPos = new Vector(asteroids[j].pos.x - aWidth / 2, asteroids[j].pos.y - aHeight / 2)
+
+			if(inArea(bullets[i].pos, aPos, aWidth, aHeight)) {
+
+				delete asteroids[j]
+
+				delete bullets[i]
 
 				asteroids.splice(j, 1)
 
 				bullets.splice(i, 1)
 
-				
-
 			}
+
+			delete aWidth
+
+			delete aHeight
+
+			delete aPos
 
 		}
 
