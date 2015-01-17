@@ -1,0 +1,7 @@
+feature powerups:
+Tri-shot
+Beam
+Shield
+Homing Bullets
+todo make death collisions more forgiving
+fixme horizontal or vertical enemy shots accelerate dramatically
